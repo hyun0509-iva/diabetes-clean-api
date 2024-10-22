@@ -1,0 +1,56 @@
+{
+  "env": {
+    "es2021": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "tsconfigRootDir": "__dirname"
+  },
+  "plugins": ["@typescript-eslint", "eslint-plugin-prettier", "import"],
+  "extends": [
+    "eslint:recommended",
+    "eslint-config-prettier",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "no-param-reassign": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "no-alert": "error",
+    "no-console": "off",
+    "no-shadow": 0,
+    "no-var": "off",
+    "no-empty-function": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "prefer-const": "off",
+    "import/namespace": "off",
+    "import/default": "off",
+    "no-return-await": "off",
+    "linebreak-style": "off",
+    "import/prefer-default-export": 0,
+    "import/no-extraneous-dependencies": 0,
+    "no-extra-boolean-cast": 1,
+    "@typescript-eslint/no-explicit-any": "off",
+    "consistent-return": "off",
+    "no-plusplus": "off",
+    "array-callback-return": "off",
+    "no-lonely-if": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extension": [".js", ".ts"],
+        "paths": ["src"]
+      }
+    }
+  }
+}
