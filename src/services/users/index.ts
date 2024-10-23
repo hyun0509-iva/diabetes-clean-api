@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Types } from "mongoose";
 import { IUserModel } from "../../models/users";
-import { createUserDTO } from "./createUserDTO";
+import { createUserDTO } from "./dto/createUserDTO";
 
 export class UsersSeivce {
   constructor(private userModel: IUserModel) {}

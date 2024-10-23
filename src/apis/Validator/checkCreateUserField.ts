@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-export const checkUser = [
+export const checkCreateUserField = [
   body("email")
     .notEmpty()
     .trim() // 필드가 비어있는지 검증
@@ -11,9 +11,7 @@ export const checkUser = [
   body("nickname")
     .notEmpty()
     .trim()
-    .withMessage("닉네임을 입력해주세요.")
-    .isLength({ min: 6, max: 13 })
-    .withMessage("닉네임은 6 ~ 13자리를 입력해 주세요"),
+    .withMessage("닉네임을 입력해주세요."),
   body("password")
     .notEmpty()
     .trim()

@@ -10,10 +10,10 @@ export const isUserIdValid = async (
 ) => {
   const { id } = req.params;
   const isValid = Types.ObjectId.isValid(id);
-  if (!isValid) {
+  if (!isValid) { 
     next(new NotFoundException());
   } else {
-    (req as any).id = new Types.ObjectId(id);
+    req.id = new Types.ObjectId(id);
     next();
   }
 };
