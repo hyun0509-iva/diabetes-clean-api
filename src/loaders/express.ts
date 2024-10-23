@@ -8,6 +8,7 @@ import env from "../config";
 import apis from "../apis";
 import { PATH } from "../constants/path";
 import NotFoundException from "../exceptions/NotFoundException";
+import { passportConfig } from "../auth/passport";
 
 export default (app: express.Application) => {
   const corsOptions = {
@@ -20,7 +21,6 @@ export default (app: express.Application) => {
     crossOriginResourcePolicy: { policy: "cross-origin" }
   };
 
-  const app_ = Router();
   app.use(morgan("dev"));
   app.use(cors(corsOptions));
   app.use(helmet(helmetOptions));
@@ -28,7 +28,8 @@ export default (app: express.Application) => {
   app.use(express.json());
   app.use(cookieParser(env.COOKIE_SECRET));
   app.use(express.static(path.join(path.resolve(), "public")));
-
+  app.use(passportConfig());
+  
   app.use(PATH.API_BASE_URL, apis());
   app.use((req: Request, res: Response, next: NextFunction) =>
     next(new NotFoundException())
