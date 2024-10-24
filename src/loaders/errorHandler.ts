@@ -3,6 +3,7 @@ import HttpException from "../exceptions/HttpException";
 import { Request, Response, NextFunction } from "express";
 
 export default (app: express.Application) => {
+  console.log("errorHandler");
   app.use(
     (error: HttpException, req: Request, res: Response, next: NextFunction) => {
       const status = error.status || 500;
