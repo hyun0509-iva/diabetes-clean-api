@@ -5,6 +5,8 @@ import { isUserIdValid } from "../middleware/isUserIdValid";
 import { isUserFieldValid } from "../middleware/isUserFieldValid";
 import CustomException from "../../exceptions/CustomException";
 import { checkCreateUserField } from "../Validator/checkCreateUserField";
+import { authorization } from "../middleware/authorization";
+import passport from "passport";
 
 export default (app: Router) => {
   const router = Router();
@@ -14,7 +16,7 @@ export default (app: Router) => {
     res.send("유저관련 api");
   });
 
-  /* 사용자 정보 조회*/
+  /* 사용자 정보 조회 */
   router.get("/:id", isUserIdValid, async (req: Request, res: Response) => {
     // ex: /api/v1/users/65b2859dbf2de07d2da194f2
     const id = (req as any).id;
@@ -43,7 +45,14 @@ export default (app: Router) => {
   );
 
   /* 사용자 정보 수정 */
+  router.patch("/:id", authorization, (req, res) => {
+    res.send({ user: req.user, msg: "사용자 정보 수정 기능 개발중..." });
+  });
 
   /* 사용자 정보 삭제 */
+  router.delete("/:id", authorization, (req, res) => {
+    res.send({ user: req.user, msg: "사용자 정보 삭제 기능 개발중..." });
+  });
+
   return router;
 };

@@ -11,10 +11,9 @@ interface IUser {
   followings: Array<IUser>;
 }
 
-export interface IUserModel extends Model<IUser> {}
 const { ObjectId } = Schema.Types;
 
-const userSchema = new Schema<IUser, IUserModel>(
+const userSchema = new Schema<IUser>(
   {
     email: {
       type: String,
@@ -62,6 +61,8 @@ const userSchema = new Schema<IUser, IUserModel>(
   }
 );
 
-const UsersModel: IUserModel=
-  mongoose.models.UsersModel || model<IUser, IUserModel>("User", userSchema);
+export type TUserModel = typeof UsersModel;
+
+const UsersModel =
+  mongoose.models.UsersModel || model<IUser>("User", userSchema);
 export default UsersModel;

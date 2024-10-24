@@ -1,17 +1,17 @@
 import bcrypt from "bcrypt";
 import { Types } from "mongoose";
-import { IUserModel } from "../../models/users";
+import { TUserModel } from "../../models/users";
 import { createUserDTO } from "./dto/createUserDTO";
 
 export class UsersSeivce {
-  constructor(private userModel: IUserModel) {}
+  constructor(private userModel: TUserModel) {}
 
   async createUser(userCreateDto: createUserDTO) {
     const exUser = await this.userModel.exists({ email: userCreateDto.email });
-    if(exUser) {
-      return 'already created User';
+    if (exUser) {
+      return "already created User";
     }
-    
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userCreateDto.password, salt);
     const users = await this.userModel.create({
@@ -23,6 +23,7 @@ export class UsersSeivce {
 
   async findById(id: Types.ObjectId) {
     const user = await this.userModel.findById(id);
-    return user;
+    const { password, ...data } = user._doc;
+    return data;
   }
 }

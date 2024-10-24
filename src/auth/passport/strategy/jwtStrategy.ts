@@ -5,8 +5,8 @@ import {
   StrategyOptionsWithoutRequest
 } from "passport-jwt";
 import env from "../../../config";
-import { UsersSeivce } from "../../../services/users";
 import UsersModel from "../../../models/users";
+import { UsersSeivce } from "../../../services/users";
 
 const jwtOptions: StrategyOptionsWithoutRequest = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -16,11 +16,14 @@ const jwtOptions: StrategyOptionsWithoutRequest = {
 
 export default () => {
   passport.use(
+    "jwt",
     new JwtStrategy(jwtOptions, async (payload, done) => {
       try {
-        console.log({ payload });
-        const userService = new UsersSeivce(UsersModel);
-        const user = await userService.findById(payload.id);
+        // 유효한 토큰이면 payload(decoded token 정보)를 전달받음
+        // 이 payload로 유저 조회
+        const userSeivce = new UsersSeivce(UsersModel);
+        const user = await userSeivce.findById(payload.id);
+
         if (user) {
           return done(null, user);
         }
