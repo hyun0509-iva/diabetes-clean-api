@@ -22,12 +22,13 @@ export default () => {
         // 유효한 토큰이면 payload(decoded token 정보)를 전달받음
         // 이 payload로 유저 조회
         const userSeivce = new UsersSeivce(UsersModel);
-        const user = await userSeivce.findById(payload.id);
+        const userData = await userSeivce.findById(payload.id);
 
-        if (user) {
-          return done(null, user);
+        if (userData === 'no user') {
+          return done(null, false, { message: "유저가 존재하지 않습니다." });
         }
-        return done(null, false);
+        
+        return done(null, userData);
       } catch (error) {
         return done(error);
       }
