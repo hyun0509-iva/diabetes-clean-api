@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import UsersModel, { TUserModel } from "../../models/users";
 import { CreateUserDTO } from "./dto/createUserDTO";
 import { UpdateUserDTO } from "./dto/updateUserDTO";
-import { IResFollow, IUserEntity } from "./interface/users";
+import { ResFollowType, IUserEntity } from "./interface/users";
 
 export class UsersSeivce {
   constructor(private userModel: TUserModel) {}
@@ -87,7 +87,7 @@ export class UsersSeivce {
     }
   }
 
-  async findUserFollowById(id: Types.ObjectId): Promise<IResFollow> {
+  async findUserFollowById(id: Types.ObjectId): Promise<ResFollowType> {
     const user = await this.userModel.findById(id);
     const { _id, nickname, followers, followings } = user;
     const result = {

@@ -1,15 +1,5 @@
-import mongoose, { Model, Schema, model } from "mongoose";
-
-interface IUser {
-  email: string;
-  nickname: string;
-  password: string;
-  imageSrc: string;
-  aboutMe: string;
-  token: string;
-  followers: Array<IUser>;
-  followings: Array<IUser>;
-}
+import mongoose, { Schema, model } from "mongoose";
+import { IUser } from "../services/users/interface/users";
 
 const { ObjectId } = Schema.Types;
 

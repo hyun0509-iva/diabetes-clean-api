@@ -1,17 +1,26 @@
 import { Types } from "mongoose";
 
-export interface IUserEntity {
-  _id: Types.ObjectId;
+export interface IUser {
   email: string;
   nickname: string;
+  password: string;
   imageSrc: string;
-  followers: Array<any>;
-  followings: Array<any>;
   aboutMe?: string;
+  token: string;
+  followers: Array<IUser>;
+  followings: Array<IUser>;
+}
+
+export interface IUserEntity extends IUser {
+  _id: Types.ObjectId;
   createdAt: string;
   updatedAt: string;
 }
 
-export type IResFollow = {
+export interface RefleshTokenType extends Pick<IUser, "token"> {
+  userId: string;
+}
+
+export type ResFollowType = {
   writer: { _id: Types.ObjectId; nickname: string };
 } & Pick<IUserEntity, "followers" | "followings">;
