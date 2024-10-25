@@ -16,11 +16,17 @@ export const localAuth = (req: Request, res: Response, next: NextFunction) => {
       req.user = user;
       next();
 
-      // req.login()은 세션을 이용한 로그인 처리
-      // req.login(user, (err) => {
-      //   if (err) return console.error(err);
-      //   <--- 로그인 처리 ---->
-      // });
     }
-  )(req, res);
+  )(req, res, next);
 };
+
+/* 
+   세션(session)을 이용한 로그인 처리
+   - 세션을 이용한 로그인 처리를 하려면 아래와 같이 
+     req.login() 사용
+
+     req.login(user, (err) => {
+       if (err) return console.error(err);
+       <--- 로그인 처리 ---->
+     });
+*/
