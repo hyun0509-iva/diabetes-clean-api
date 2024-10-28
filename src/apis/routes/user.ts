@@ -93,6 +93,7 @@ export default (app: Router) => {
     })
   );
 
+  /* 팔로우 추가 */
   router.patch(
     "/:id/follow",
     isUserIdValid,
