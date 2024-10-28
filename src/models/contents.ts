@@ -26,7 +26,7 @@ const contentsSchema = new Schema<IContents>(
   }
 );
 
-export type TUserModel = typeof ContentsModel;
+export type TContentsModel= typeof ContentsModel;
 
 // 검색을 위한 인덱싱
 contentsSchema.index({ content: "text" });

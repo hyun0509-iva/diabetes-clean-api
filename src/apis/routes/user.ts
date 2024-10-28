@@ -28,7 +28,7 @@ export default (app: Router) => {
       if (result === "already created User") {
         throw new CustomException(400, "이미 가입된 유저입니다.");
       }
-      res.status(201).json({ isOk: true, msg: "회원가입이 되었습니다." });
+      res.json({ isOk: true, msg: "회원가입이 되었습니다." });
     })
   );
 
