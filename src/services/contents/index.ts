@@ -62,7 +62,7 @@ export class ContentsService {
     id: Types.ObjectId,
     updateContentsDto: UpdateContentsDTO
   ) {
-    const result = await this.contentsModel.updateOne({
+    const result = await this.contentsModel.findByIdAndUpdate(id, {
       $set: updateContentsDto
     });
     return result;
@@ -72,7 +72,7 @@ export class ContentsService {
     // const contents = await this.contentsModel.findById(id);
     // if (!contents) return null;
 
-    const result = await this.contentsModel.updateOne({
+    const result = await this.contentsModel.findByIdAndDelete(id, {
       $set: { isDeleted: true }
     });
     return result;
