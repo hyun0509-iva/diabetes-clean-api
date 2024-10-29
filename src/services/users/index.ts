@@ -5,7 +5,7 @@ import { CreateUserDTO } from "./dto/createUserDTO";
 import { UpdateUserDTO } from "./dto/updateUserDTO";
 import { ResFollowType, IUserEntity } from "./interface/users";
 
-export class UsersSeivce {
+export class UsersService{
   constructor(private userModel: TUserModel) {}
 
   async createUser(userCreateDto: CreateUserDTO) {

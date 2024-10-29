@@ -5,7 +5,6 @@ import {
   Strategy as LocalStrategy
 } from "passport-local";
 import UsersModel from "../../../models/users";
-import { UsersSeivce } from "../../../services/users";
 
 const passportConfig: IStrategyOptionsWithRequest = {
   usernameField: "email",
