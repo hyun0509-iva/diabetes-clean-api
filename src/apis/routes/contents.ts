@@ -20,8 +20,8 @@ export default (app: Router) => {
     "/",
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const user = req.user as IUserEntity;
-      const contentsDto = req.body as CreateContentsDTO;
+      const user: IUserEntity = req.user as IUserEntity;
+      const contentsDto: CreateContentsDTO = req.body;
 
       const contentsService = new ContentsService(ContentsModel);
       const result = await contentsService.createContents(user, contentsDto);
@@ -55,6 +55,7 @@ export default (app: Router) => {
     "/:id",
     asyncWapperWithError(async (req: Request, res: Response) => {
       const { id } = req.params;
+
       const contentsService = new ContentsService(ContentsModel);
       const result = await contentsService.findContentsById(id);
 
@@ -70,8 +71,8 @@ export default (app: Router) => {
     isContentsIdValid,
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const id = req.id as Types.ObjectId;
-      const updateContentsDTO = req.body as UpdateContentsDTO;
+      const id: Types.ObjectId = req.id;
+      const updateContentsDTO: UpdateContentsDTO = req.body;
       const contentsService = new ContentsService(ContentsModel);
       const result = await contentsService.updateContents(
         id,
@@ -88,7 +89,7 @@ export default (app: Router) => {
     isContentsIdValid,
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const id = req.id as Types.ObjectId;
+      const id: Types.ObjectId = req.id;
 
       const contentsService = new ContentsService(ContentsModel);
       const result = await contentsService.deleteContents(id);

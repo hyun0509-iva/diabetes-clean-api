@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { generateTokens } from "../../utils/generateTokens";
-import { checkLoginField } from "../Validator/checkLoginField";
+import { checkLoginField } from "../../Validator/checkLoginField";
 import { isUserFieldValid } from "../middleware/isUserFieldValid";
 import { localAuth } from "../middleware/localAuth";
 

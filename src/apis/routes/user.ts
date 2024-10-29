@@ -10,6 +10,7 @@ import { authorization } from "../middleware/authorization";
 import { UpdateUserDTO } from "../../services/users/dto/updateUserDTO";
 import { IUserEntity } from "../../services/users/interface/users";
 import { asyncWapperWithError } from "../../utils/asyncWapperWithError";
+import { CreateUserDTO } from "src/services/users/dto/createUserDTO";
 
 export default (app: Router) => {
   const router = Router();
@@ -21,7 +22,7 @@ export default (app: Router) => {
     checkCreateUserField,
     isUserFieldValid,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const userDto = req.body;
+      const userDto: CreateUserDTO = req.body;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.createUser(userDto);
@@ -49,7 +50,7 @@ export default (app: Router) => {
     isUserIdValid,
     asyncWapperWithError(async (req: Request, res: Response) => {
       // ex: /api/v1/users/65b2859dbf2de07d2da194f2
-      const id = req.id as Types.ObjectId;
+      const id: Types.ObjectId = req.id;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.findUserById(id);
@@ -67,8 +68,8 @@ export default (app: Router) => {
     "/:id",
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const updateUserDTO = req.body as UpdateUserDTO;
-      const user = req.user as IUserEntity;
+      const updateUserDTO: UpdateUserDTO = req.body;
+      const user: IUserEntity = req.user as IUserEntity;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.updateUser(updateUserDTO, user);
@@ -82,7 +83,7 @@ export default (app: Router) => {
     "/:id",
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const user = req.user as IUserEntity;
+      const user: IUserEntity = req.user as IUserEntity;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.deleteUser(user);
@@ -99,8 +100,8 @@ export default (app: Router) => {
     isUserIdValid,
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const user = req.user as IUserEntity;
-      const toUser = req.id;
+      const user: IUserEntity = req.user as IUserEntity;
+      const toUser: Types.ObjectId = req.id;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.addFollow(toUser, user);
@@ -119,7 +120,7 @@ export default (app: Router) => {
     "/:id/follow",
     isUserIdValid,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const id = req.id as Types.ObjectId;
+      const id: Types.ObjectId = req.id;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.findUserFollowById(id);
@@ -133,8 +134,8 @@ export default (app: Router) => {
     isUserIdValid,
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
-      const user = req.user as IUserEntity;
-      const toUser = req.id;
+      const user: IUserEntity = req.user as IUserEntity;
+      const toUser: Types.ObjectId = req.id;
 
       const userService = new UsersService(UsersModel);
       const result = await userService.unFollow(toUser, user);
