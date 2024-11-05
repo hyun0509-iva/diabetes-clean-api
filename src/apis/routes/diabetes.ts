@@ -3,10 +3,15 @@ import { Types } from "mongoose";
 import { authorization } from "../middleware/authorization";
 import { asyncWapperWithError } from "../../utils/asyncWapperWithError";
 import { IUserEntity } from "../../services/users/interface/users";
-import { CreateDiabetesDTO, UpdateDiabetesDTO } from "../../services/diabetes/dto";
+import {
+  CreateDiabetesDTO,
+  UpdateDiabetesDTO
+} from "../../services/diabetes/dto";
 import { DiabetesService } from "../../services/diabetes";
 import DiabetesModel from "../../models/diabetes";
 import { isDiabetesIdValid } from "../middleware/isDiabetesIdValid";
+import { checkDiabetesField } from "../../Validator/checkDiabetesField";
+import { isFieldValid } from "../middleware/isFieldValid";
 
 export default (app: Router) => {
   const router = Router();
@@ -16,6 +21,8 @@ export default (app: Router) => {
   /* 당수치 기록 */
   router.post(
     "/",
+    checkDiabetesField,
+    isFieldValid,
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
       const user: IUserEntity = req.user as IUserEntity;
@@ -27,21 +34,21 @@ export default (app: Router) => {
       res.json({ isOk: true, msg: "성공적으로 저장되었습니다." });
     })
   );
-
-  /* 모든 당수치 조회 */
+//api/v1/diabetes/users/:id
+  /* 유저의모든 당수치 조회 */
   router.get(
-    "/",
+    "/users/:id",
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
       const user: IUserEntity = req.user as IUserEntity;
 
       const contentsService = new DiabetesService(DiabetesModel);
-      const result = await contentsService.findAll(user);
+      const diabetes = await contentsService.findAll(user);
 
-      if (result === null) {
-        res.status(204).json({});
+      if (diabetes === null) {
+        return res.status(204).json({});
       }
-      res.json({ isOk: true, data: result });
+      res.json({ isOk: true, diabetes });
     })
   );
 
@@ -56,7 +63,7 @@ export default (app: Router) => {
       const result = await contentsService.findDiabetesById(id);
 
       if (result === null) {
-        res.status(204).json({});
+        return res.status(204).json({});
       }
       res.json({ isOk: true, data: result });
     })
@@ -65,17 +72,24 @@ export default (app: Router) => {
   /* 당수치 수정 */
   router.patch(
     "/:id",
+    checkDiabetesField[0],
+    isFieldValid,
     isDiabetesIdValid,
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
       const id: Types.ObjectId = req.id;
+      console.log({ id });
       const updateDiabetesDTO: UpdateDiabetesDTO = req.body;
 
       const contentsService = new DiabetesService(DiabetesModel);
-      const result = await contentsService.updateDiabetes(id, updateDiabetesDTO);
+      const result = await contentsService.updateDiabetes(
+        id,
+        updateDiabetesDTO
+      );
       if (result) {
         res.json({ isOk: true, msg: "해당 당수치 데이터가 수정되었습니다." });
       }
+      res.send('ok')
     })
   );
 

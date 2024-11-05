@@ -26,7 +26,7 @@ export class DiabetesService {
       .sort({ createdAt: -1 }) // 내림차순 정렬
       .populate("writer", "nickname");
 
-    if (!diabetes) return null;
+    if (!diabetes.length) return null;
     return diabetes;
   }
 
@@ -39,7 +39,10 @@ export class DiabetesService {
     return diabetes;
   }
 
-  async updateDiabetes(id: Types.ObjectId, updateDiabetesDTO: UpdateDiabetesDTO) {
+  async updateDiabetes(
+    id: Types.ObjectId,
+    updateDiabetesDTO: UpdateDiabetesDTO
+  ) {
     const result = await this.diabetesModel.findByIdAndUpdate(id, {
       $set: updateDiabetesDTO
     });
