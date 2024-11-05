@@ -1,13 +1,13 @@
-import { TContentsModel } from "src/models/contents";
+import { Types } from "mongoose";
+import { TContentsModel } from "../../models/contents";
 import { TUserModel } from "../../models/users";
 import { IUserEntity } from "../users/interface/users";
 import { CreateContentsDTO } from "./dto/createContentsDTO";
 import { getPaging } from "../../utils/getPaging";
-import { Types } from "mongoose";
 import { UpdateContentsDTO } from "./dto/updateContentsDTO";
 
 export class ContentsService {
-  constructor(private contentsModel: TContentsModel) {}
+  constructor(private contentsModel: TContentsModel, private usersModel: TUserModel) {}
 
   async createContents(
     user: IUserEntity,
@@ -28,6 +28,7 @@ export class ContentsService {
       this.contentsModel
     );
 
+    console.log({ currentPage, listSize, totalContents });
     const contents = await this.contentsModel
       .find()
       .sort({ createdAt: -1 }) //데이터 최신순으로 정렬
@@ -47,6 +48,72 @@ export class ContentsService {
       }
     }
     return contents;
+  }
+
+  async findMyfeed(query: any, user: IUserEntity) {
+    const [currentPage, listSize, totalContents] = await getPaging(
+      query,
+      {
+        writer: user?._id
+      },
+      this.contentsModel
+    );
+
+    const contents = await this.contentsModel
+      .find()
+      .where("writer")
+      .equals(user?._id)
+      .sort({ createdAt: -1 })
+      .skip(listSize * (currentPage - 1))
+      .limit(listSize)
+      .populate("writer", "email nickname imageData aboutMe");
+
+    // 다음 페이지 존재 여부 확인
+    if (!totalContents) {
+      console.log({ totalContents });
+      if (currentPage === 1) {
+        // 첫 페이지에서 컨텐츠가 없는 경우
+        return null;
+      } else {
+        // 다음 불러올 페이지가 없는 경우
+        return "no more content to load";
+      }
+    }
+    return contents;
+  }
+
+  async getMyFeedInfo(query: any, user: IUserEntity) {
+    const [currentPage, listSize, totalContents] = await getPaging(
+      query,
+      {},
+      this.contentsModel
+    );
+
+    const users = await this.usersModel.findOne({ nickname: user.nickname });
+    const { password, email, ...writer } = users._doc;
+
+    const contents = await this.contentsModel
+      .find()
+      .where("writer")
+      .equals(user?._id)
+      .sort({ createdAt: -1 })
+      .skip(listSize * (currentPage - 1))
+      .limit(listSize)
+      .populate("writer", "email nickname imageData aboutMe");
+
+    // 다음 페이지 존재 여부 확인
+    if (!totalContents) {
+      console.log({ totalContents });
+      if (currentPage === 1) {
+        // 첫 페이지에서 컨텐츠가 없는 경우
+        return null;
+      } else {
+        // 다음 불러올 페이지가 없는 경우
+        return "no more content to load";
+      }
+    }
+    
+    return {contents, writer};
   }
 
   async findContentsById(id: string) {

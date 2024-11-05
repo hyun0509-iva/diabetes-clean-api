@@ -6,6 +6,7 @@ import { ContentsService } from "../../services/contents";
 import { IUserEntity } from "../../services/users/interface/users";
 import { asyncWapperWithError } from "../../utils/asyncWapperWithError";
 import ContentsModel from "../../models/contents";
+import UsersModel from "../../models/users";
 import {
   CreateContentsDTO,
   UpdateContentsDTO
@@ -16,6 +17,7 @@ export default (app: Router) => {
 
   app.use("/contents", router);
 
+  /* 컨텐츠 기록 */
   router.post(
     "/",
     authorization,
@@ -23,49 +25,104 @@ export default (app: Router) => {
       const user: IUserEntity = req.user as IUserEntity;
       const contentsDto: CreateContentsDTO = req.body;
 
-      const contentsService = new ContentsService(ContentsModel);
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
       const result = await contentsService.createContents(user, contentsDto);
       console.log({ save: result });
       res.json({ isOk: true, msg: "성공적으로 저장되었습니다." });
     })
   );
 
+  /* 모든 컨텐츠 조회 */
   router.get(
     "/",
     asyncWapperWithError(async (req: Request, res: Response) => {
       console.log("getAllContents");
       const query = req.query;
 
-      const contentsService = new ContentsService(ContentsModel);
-      const result = await contentsService.findAll(query);
-      if (result === null) {
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
+      const contents = await contentsService.findAll(query);
+
+      if (contents === null) {
         return res.status(204).json({});
-      } else if (result === "no more content to load") {
+      } else if (contents === "no more content to load") {
         return res.status(200).json({
           isOk: true,
           contents: [],
           msg: "더 이상 불러올 컨텐츠가 없습니다."
         });
       }
-      res.json({ isOk: true, data: result });
+      res.json({ isOk: true, contents });
     })
   );
 
+  /* 내 피드  */
+  router.get(
+    "/users/:nickname",
+    authorization,
+    asyncWapperWithError(async (req: Request, res: Response) => {
+      const query = req.query;
+      const user: IUserEntity = req.user as IUserEntity;
+
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
+      const contents = await contentsService.findMyfeed(query, user);
+
+      console.log({ contents });
+      if (contents === null) {
+        return res.status(204).json({});
+      } else if (contents === "no more content to load") {
+        return res.status(200).json({
+          isOk: true,
+          contents: [],
+          msg: "더 이상 불러올 컨텐츠가 없습니다."
+        });
+      }
+      res.json({ isOk: true, contents });
+    })
+  );
+
+  /* 유저의 게시글(= 내 피드)의 게시글 정보(내 게시글 포함 x) */
+  router.get(
+    "/myfeed-info/users/:nickname",
+    authorization,
+    asyncWapperWithError(async (req: Request, res: Response) => {
+      const query = req.query;
+      const { nickname } = req.params;
+      const user: IUserEntity = req.user as IUserEntity;
+
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
+      const contentsInfo = await contentsService.getMyFeedInfo(query, user);
+
+      console.log({ contentsInfo });
+      if (contentsInfo === null) {
+        return res.status(204).json({});
+      } else if (contentsInfo === "no more content to load") {
+        return res.status(200).json({
+          isOk: true,
+          contents: [],
+          msg: "더 이상 불러올 컨텐츠가 없습니다."
+        });
+      }
+      res.json({ isOk: true, ...contentsInfo });
+    })
+  );
+
+  /* 컨텐츠 상세 조회*/
   router.get(
     "/:id",
     asyncWapperWithError(async (req: Request, res: Response) => {
       const { id } = req.params;
 
-      const contentsService = new ContentsService(ContentsModel);
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
       const result = await contentsService.findContentsById(id);
 
       if (result === null) {
         res.status(204).json({});
       }
-      res.json({ isOk: true, data: result });
+      res.json({ isOk: true, contents: result });
     })
   );
 
+  /* 컨텐츠 수정 */
   router.patch(
     "/:id",
     isContentsIdValid,
@@ -73,7 +130,7 @@ export default (app: Router) => {
     asyncWapperWithError(async (req: Request, res: Response) => {
       const id: Types.ObjectId = req.id;
       const updateContentsDTO: UpdateContentsDTO = req.body;
-      const contentsService = new ContentsService(ContentsModel);
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
       const result = await contentsService.updateContents(
         id,
         updateContentsDTO
@@ -84,6 +141,7 @@ export default (app: Router) => {
     })
   );
 
+  /* 컨텐츠 삭제 */
   router.delete(
     "/:id",
     isContentsIdValid,
@@ -91,7 +149,7 @@ export default (app: Router) => {
     asyncWapperWithError(async (req: Request, res: Response) => {
       const id: Types.ObjectId = req.id;
 
-      const contentsService = new ContentsService(ContentsModel);
+      const contentsService = new ContentsService(ContentsModel, UsersModel);
       const result = await contentsService.deleteContents(id);
 
       if (result) {
