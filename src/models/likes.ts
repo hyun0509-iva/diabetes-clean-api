@@ -3,26 +3,31 @@ import { ILikes } from "../services/likes/interface/likes";
 
 const { ObjectId } = Schema.Types;
 
-const LikeSchema = new Schema<ILikes>({
-  writer: {
-    type: ObjectId,
-    ref: "User"
+const LikeSchema = new Schema<ILikes>(
+  {
+    writer: {
+      type: ObjectId,
+      ref: "User"
+    },
+    contentsType: {
+      type: String
+    },
+    contents: {
+      type: ObjectId,
+      ref: "Contents"
+    },
+    comments: {
+      type: ObjectId,
+      ref: "Comment"
+    }
   },
-  contentsType: {
-    type: String
-  },
-  contents: {
-    type: ObjectId,
-    ref: "Contents"
-  },
-  comments: {
-    type: ObjectId,
-    ref: "Comment"
+  {
+    timestamps: true,
+    versionKey: false
   }
-}, {
-  timestamps: true,
-  versionKey: false
-});
+);
 
-const Like = model<ILikes>("Like", LikeSchema);
-export default Like;
+export type TLikeModel = typeof LikeModel;
+
+const LikeModel = model<ILikes>("Like", LikeSchema);
+export default LikeModel;
