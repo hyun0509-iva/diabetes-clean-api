@@ -1,7 +1,7 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import CustomException from "../../exceptions/CustomException";
-export const isUserFieldValid = (
+export const isFieldValid = (
   req: Request,
   res: Response,
   next: NextFunction
