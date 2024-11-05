@@ -12,10 +12,9 @@ export const localAuth = (req: Request, res: Response, next: NextFunction) => {
       // done 함수가 호출할 때 여기 작성한 부분이 리턴됨
       /* ----------------------------------------------------------- */
       if (err) return console.error(err);
-      if (!user) return next(new CustomException(400, info.message));
+      if (!user) return next(new CustomException(400, info?.message));
       req.user = user;
       next();
-
     }
   )(req, res, next);
 };
