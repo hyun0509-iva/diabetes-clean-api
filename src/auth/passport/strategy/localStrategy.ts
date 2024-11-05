@@ -23,14 +23,14 @@ export default () => {
           /* 인증 처리 */
           const userData = await UsersModel.findOne({ email: req_email });
           if (!userData) {
-            return done(null, false, { message: "유저가 존재하지 않습니다." });
+            return done(null, false, { message: "Not exist user" });
           }
           const { password, ...user } = userData._doc;
 
           const isMatch = await bcrypt.compare(req_password, password);
           if (!isMatch) {
             return done(null, false, {
-              message: "비밀번호가 일치하지 않습니다."
+              message: "Not match password"
             });
           }
           

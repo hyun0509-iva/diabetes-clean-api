@@ -9,10 +9,10 @@ export class UsersService{
   constructor(private userModel: TUserModel) {}
 
   async createUser(userCreateDto: CreateUserDTO) {
-    const exUser = await this.userModel.exists({ email: userCreateDto.email });
-    if (exUser) {
-      return "already created User";
-    }
+    // const exUser = await this.userModel.exists({ email: userCreateDto.email });
+    // if (exUser) {
+    //   return "already created User";
+    // }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userCreateDto.password, salt);
@@ -21,6 +21,14 @@ export class UsersService{
       password: hashedPassword
     });
     return result;
+  }
+
+  async checkExUser(email: string) {
+    const exUser = await this.userModel.exists({ email });
+    if (exUser) {
+      return "already created User";
+    }
+    return "available email"
   }
 
   async findAll(): Promise<Array<IUserEntity> | string> {

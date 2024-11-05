@@ -1,5 +1,5 @@
-import { RefreshTokenService } from "./../../services/refreshToken/index";
 import { Router, Request, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
 import { generateTokens } from "../../utils/generateTokens";
 import { checkLoginField } from "../../Validator/checkLoginField";
 import { isFieldValid } from "../middleware/isFieldValid";
@@ -7,13 +7,14 @@ import { localAuth } from "../middleware/localAuth";
 import { authorization } from "../middleware/authorization";
 import { asyncWapperWithError } from "../../utils/asyncWapperWithError";
 import RefreshTokenModel from "../../models/refleshToken";
+import { UsersService } from "./../../services/users";
+import { RefreshTokenService } from "./../../services/refreshToken";
 import { IUserEntity } from "../../services/users/interface/users";
-import NotAuthorizedException from "../../exceptions/NotAuthorizedException";
+import {NotAuthorizedException, CustomException} from "../../exceptions";
 import {
   verifyRefleshToken,
   verifyExpiredToken
 } from "../../utils/verifyToken";
-import { JwtPayload } from "jsonwebtoken";
 import UsersModel from "../../models/users";
 
 export default (app: Router) => {
@@ -43,12 +44,27 @@ export default (app: Router) => {
       const refreshTokenService = new RefreshTokenService(RefreshTokenModel);
       await refreshTokenService.createToken(user, refreshToken);
 
-      return res.json({
+      res.json({
         isOk: true,
         accessToken,
         userInfo: req.user,
         msg: "로그인이 되었습니다."
       });
+    })
+  );
+
+  /* 이메일 중복 확인 */
+  router.post(
+    "/checkemail",
+    asyncWapperWithError(async (req: Request, res: Response) => {
+      const { email } = req.body;
+      const usersService = new UsersService(UsersModel);
+      const result = await usersService.checkExUser(email);
+
+      if (result === "already created User") {
+        throw new CustomException(400, "이미 가입된 유저입니다.");
+      }
+      res.json({ isOk: true, msg: "사용 가능한 이메일입니다." });
     })
   );
 

@@ -15,10 +15,10 @@ export const authorization = async (
       console.log({ infoMsg: info?.message });
 
       if (err) {
-        console.error(err);
+        console.error({authError: err});
         throw Error(err.message);
       } else {
-        console.log(info?.message);
+        console.log({authErrorMsg: info?.message});
 
         if (info?.message === "No auth token") {
           // 토큰이 없으면 인증 에러(401) 처리
