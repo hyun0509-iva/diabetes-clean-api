@@ -24,6 +24,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       default: ""
     },
+    imageData: {
+      type: Object,
+      default: {}
+    },
     //유저 소개
     aboutMe: {
       type: String,

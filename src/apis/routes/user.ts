@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { UsersService } from "../../services/users";
 import UsersModel from "../../models/users";
 import { isUserIdValid } from "../middleware/isUserIdValid";
-import { isUserFieldValid } from "../middleware/isUserFieldValid";
+import { isFieldValid } from "../middleware/isFieldValid";
 import CustomException from "../../exceptions/CustomException";
 import { checkCreateUserField } from "../../Validator/checkCreateUserField";
 import { authorization } from "../middleware/authorization";
@@ -20,7 +20,7 @@ export default (app: Router) => {
   router.post(
     "/",
     checkCreateUserField,
-    isUserFieldValid,
+    isFieldValid,
     asyncWapperWithError(async (req: Request, res: Response) => {
       const userDto: CreateUserDTO = req.body;
 

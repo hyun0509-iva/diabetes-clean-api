@@ -5,6 +5,7 @@ export interface IUser {
   nickname: string;
   password: string;
   imageSrc: string;
+  imageData: object;
   aboutMe?: string;
   token: string;
   followers: Array<IUser>;
@@ -19,6 +20,7 @@ export interface IUserEntity extends IUser {
 
 export interface RefleshTokenType extends Pick<IUser, "token"> {
   userId: string;
+  createdAt: Date | string;
 }
 
 export type ResFollowType = {
