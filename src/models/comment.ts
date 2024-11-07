@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IComment } from "../services/comment/interface/comment";
+import { IComment } from "../services/comments/interface/comment";
 const { ObjectId } = Schema.Types;
 
 const commentSchema = new Schema<IComment>(
@@ -29,6 +29,8 @@ const commentSchema = new Schema<IComment>(
     versionKey: false
   }
 );
+
+export type TCommentsModel = typeof CommentModel;
 
 const CommentModel = model<IComment>("Comment", commentSchema);
 export default CommentModel;

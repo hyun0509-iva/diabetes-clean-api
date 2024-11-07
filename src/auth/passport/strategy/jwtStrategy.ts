@@ -24,10 +24,10 @@ export default () => {
         const userService = new UsersService(UsersModel);
         const userData = await userService.findUserById(payload.id);
 
-        if (userData === 'no user') {
+        if (userData === "no user") {
           return done(null, false, { message: "유저가 존재하지 않습니다." });
         }
-        
+
         return done(null, userData);
       } catch (error) {
         return done(error);

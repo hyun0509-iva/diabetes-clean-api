@@ -60,12 +60,12 @@ export default (app: Router) => {
       const { id } = req.params;
 
       const contentsService = new DiabetesService(DiabetesModel);
-      const result = await contentsService.findDiabetesById(id);
+      const diabetes = await contentsService.findDiabetesById(id);
 
-      if (result === null) {
+      if (diabetes === null) {
         return res.status(204).json({});
       }
-      res.json({ isOk: true, data: result });
+      res.json({ isOk: true, diabetes });
     })
   );
 

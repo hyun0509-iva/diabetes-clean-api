@@ -124,7 +124,7 @@ export default (app: Router) => {
 
       const userService = new UsersService(UsersModel);
       const result = await userService.findUserFollowById(id);
-      res.json({ isOk: true, data: result });
+      res.json({ isOk: true, followInfo: result });
     })
   );
 

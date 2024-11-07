@@ -12,24 +12,20 @@ export const authorization = async (
     "jwt",
     { session: false },
     (err: Error, user: IUserEntity, info: { message: string }) => {
-      console.log({ infoMsg: info?.message });
-
       if (err) {
-        console.error({authError: err});
         throw Error(err.message);
       } else {
-        console.log({authErrorMsg: info?.message});
-
         if (info?.message === "No auth token") {
           // 토큰이 없으면 인증 에러(401) 처리
           return next(new CustomException(401, "Invalid token"));
-        } else if (info?.message === "jwt expired") {
+        }
+        if (info?.message === "jwt expired") {
           // 토큰이 만료되면 만료된 토큰 에러(401) 처리
           return next(new CustomException(401, "Expired token"));
         }
 
         if (!user) return next(new CustomException(400, info?.message));
-
+        console.log({ user });
         req.user = user;
         next();
       }

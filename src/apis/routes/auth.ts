@@ -10,7 +10,7 @@ import RefreshTokenModel from "../../models/refleshToken";
 import { UsersService } from "./../../services/users";
 import { RefreshTokenService } from "./../../services/refreshToken";
 import { IUserEntity } from "../../services/users/interface/users";
-import {NotAuthorizedException, CustomException} from "../../exceptions";
+import { NotAuthorizedException, CustomException } from "../../exceptions";
 import {
   verifyRefleshToken,
   verifyExpiredToken
@@ -74,10 +74,10 @@ export default (app: Router) => {
     authorization,
     asyncWapperWithError(async (req: Request, res: Response) => {
       const user: IUserEntity = req.user as IUserEntity;
-      console.log({ user });
 
       const refleshTokenService = new RefreshTokenService(RefreshTokenModel);
       const delTokenResult = await refleshTokenService.deleteToken(user);
+      
       if (!delTokenResult) {
         console.error({ delTokenResult });
         return new NotAuthorizedException();
@@ -93,13 +93,11 @@ export default (app: Router) => {
     asyncWapperWithError(async (req: Request, res: Response) => {
       const prevToken: string = req.headers.authorization.split("Bearer ")[1];
       const decodedResult = await verifyExpiredToken(prevToken);
-      console.log({ decodedResult });
       const userId = (decodedResult.decoded as JwtPayload).id;
       const user = await UsersModel.findById(userId);
 
       const isVerifyRefleshToken = await verifyRefleshToken(user); // 유저 정보로 디비에 저장된 reflesh token 검증
 
-      console.log({ isVerifyRefleshToken });
       if (isVerifyRefleshToken.isDecode) {
         // refleshToken이 만료되지 않은 경우
 
@@ -113,7 +111,6 @@ export default (app: Router) => {
         });
       } else {
         // refleshToken이 만료된 경우
-        console.log();
         return res.json({
           is: false,
           isExpiredRefleshToken: true,
