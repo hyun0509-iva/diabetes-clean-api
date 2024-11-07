@@ -143,18 +143,11 @@ export class ContentsService {
   }
 
   async deleteContents(id: Types.ObjectId) {
-    // const contents = await this.contentsModel.findById(id);
-    // if (!contents) return null;
-
-    const result = await this.contentsModel.findByIdAndDelete(id, {
+    const result = await this.contentsModel.findByIdAndUpdate(id, {
       $set: { isDeleted: true }
     });
     return result;
   }
-
-  // async findComments(id: Types.ObjectId) {
-  //   return null;
-  // }
 
   async addLike() {}
 
