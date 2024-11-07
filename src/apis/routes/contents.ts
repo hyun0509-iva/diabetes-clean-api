@@ -7,10 +7,13 @@ import { IUserEntity } from "../../services/users/interface/users";
 import { asyncWapperWithError } from "../../utils/asyncWapperWithError";
 import ContentsModel from "../../models/contents";
 import UsersModel from "../../models/users";
+import CommentModel from "../../models/comment";
 import {
   CreateContentsDTO,
   UpdateContentsDTO
 } from "../../services/contents/dto";
+import { CreateCommentsDto } from "../../services/comments/dto/createCommentsDTO";
+import { CommentsService } from "../../services/comments";
 
 export default (app: Router) => {
   const router = Router();
@@ -28,7 +31,7 @@ export default (app: Router) => {
       const contentsService = new ContentsService(ContentsModel, UsersModel);
       const result = await contentsService.createContents(user, contentsDto);
       console.log({ save: result });
-      res.json({ isOk: true, msg: "성공적으로 저장되었습니다." });
+      res.json({ isOk: true, msg: "게시글이 등록되었습니다." });
     })
   );
 
@@ -90,19 +93,10 @@ export default (app: Router) => {
       const user: IUserEntity = req.user as IUserEntity;
 
       const contentsService = new ContentsService(ContentsModel, UsersModel);
-      const contentsInfo = await contentsService.getMyFeedInfo(query, user);
+      const myFeedInfo = await contentsService.getMyFeedInfo(query, user);
 
-      console.log({ contentsInfo });
-      if (contentsInfo === null) {
-        return res.status(204).json({});
-      } else if (contentsInfo === "no more content to load") {
-        return res.status(200).json({
-          isOk: true,
-          contents: [],
-          msg: "더 이상 불러올 컨텐츠가 없습니다."
-        });
-      }
-      res.json({ isOk: true, ...contentsInfo });
+      console.log({ myFeedInfo });
+      res.json({ isOk: true, myFeedInfo });
     })
   );
 
@@ -157,6 +151,66 @@ export default (app: Router) => {
       }
     })
   );
+
+  /* 컨텐츠 댓글 작성 */
+  router.post(
+    "/:id/comments",
+    isContentsIdValid,
+    authorization,
+    asyncWapperWithError(async (req: Request, res: Response) => {
+      const id: Types.ObjectId = req.id;
+      const user: IUserEntity = req.user as IUserEntity;
+      const commentsDto: CreateCommentsDto = req.body;
+
+      const commentsService = new CommentsService(CommentModel);
+      const result = await commentsService.createComments(id, user, commentsDto);
+      console.log({ save: result });
+      res.json({ isOk: true, msg: "댓글이 등록되었습니다." });
+    })
+  );
+
+  /* 컨텐츠 해당 게시글에 작성된 댓글들 조회 */
+  router.get(
+    "/:id/comments",
+    asyncWapperWithError(async (req: Request, res: Response) => {
+      console.log("findComments");
+      const { id } = req.params;
+      const query = req.query;
+
+      const contentsService = new CommentsService(CommentModel);
+      const comments = await contentsService.findComments(query);
+
+      if (comments === null) {
+        return res.status(204).json({});
+      } else if (comments === "no more content to load") {
+        return res.status(200).json({
+          isOk: true,
+          contents: [],
+          msg: "더 이상 불러올 컨텐츠가 없습니다."
+        });
+      }
+      res.json({ isOk: true, comments });
+    })
+
+  );
+
+  /* 컨텐츠 댓글 수정 */
+  router.patch(
+    "/:id/comments",
+    asyncWapperWithError(async (req: Request, res: Response) => {})
+  );
+
+  /* 컨텐츠 댓글 삭제 */
+  router.delete(
+    "/:id/comments",
+    asyncWapperWithError(async (req: Request, res: Response) => {})
+  );
+
+  /* 컨텐츠 좋아요 추가 */
+  router.delete("/:id/like");
+
+  /* 컨텐츠 좋아요 삭제 */
+  router.delete("/:id/like");
 };
 
 /* 
