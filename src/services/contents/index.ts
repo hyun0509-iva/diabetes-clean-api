@@ -39,20 +39,22 @@ export class ContentsService {
       .sort({ createdAt: -1 })
       .skip(listSize * (currentPage - 1))
       .limit(listSize)
-      .populate("writer", "nickname imageData");
+      .populate("writer", "nickname email imageData");
 
     // comments 가져오기
     const contentIds = contents.map((content) => content._id);
     const comments = await CommentModel.find({
       contentsId: { $in: contentIds }
-    }).populate("writer", "nickname imageData email");
+    })
+      .sort({ createdAt: -1 })
+      .populate("writer", "nickname imageData email");
 
     // 컨텐츠와 댓글을 매칭하여 결과 구성
     const result = contents.map((content) => ({
       ...content.toObject(),
-      comments: comments.filter((comment) =>
+      commentCount: comments.filter((comment) =>
         comment.contentsId.equals(content._id)
-      )
+      ).length
     }));
 
     // 다음 페이지 존재 여부 확인
@@ -69,7 +71,8 @@ export class ContentsService {
     return result;
   }
 
-  async findMyfeed(query: any, user: IUserEntity) {
+  async findMyfeed(query: any, nickname: string) {
+    const user = await this.usersModel.findOne({ nickname });
     const [currentPage, listSize, totalContents] = await getPaging(
       query,
       {
@@ -89,7 +92,6 @@ export class ContentsService {
 
     // 다음 페이지 존재 여부 확인
     if (!totalContents) {
-      console.log({ totalContents });
       if (currentPage === 1) {
         // 첫 페이지에서 컨텐츠가 없는 경우
         return null;
@@ -102,11 +104,13 @@ export class ContentsService {
     return contents;
   }
 
-  async getMyFeedInfo(query: any, user: IUserEntity) {
-//const totalContents = await Model.countDocuments(filter);
-    const users = await this.usersModel.findOne({ nickname: user.nickname });
-    const contentsCount = await this.contentsModel.countDocuments({writer: user._id})
-    const { password, ...writer } = users._doc;
+  async getMyFeedInfo(query: any, nickname: string) {
+    //const totalContents = await Model.countDocuments(filter);
+    const user = await this.usersModel.findOne({ nickname });
+    const contentsCount = await this.contentsModel.countDocuments({
+      writer: user._id
+    });
+    const { password, ...writer } = user._doc;
 
     // 다음 페이지 존재 여부 확인
 
@@ -122,14 +126,24 @@ export class ContentsService {
       .findById(id)
       .populate("writer", "nickname imageData email");
 
-    if (!contents) return null;
+    if (!contents) return "no more content to load";
 
-    const comment = await CommentModel.find({ contentsId: contents.id });
-    const contentsWithComment = {
-      ...contents._doc,
-      comment
+    // comments 가져오기
+    const comments = await CommentModel.find({
+      contentsId: contents
+    })
+      .sort({ createdAt: -1 })
+      .populate("writer", "nickname imageData email");
+
+    // 컨텐츠와 댓글을 매칭하여 결과 구성
+    const result = {
+      ...contents.toObject(),
+      comments: comments.filter((comment) =>
+        comment.contentsId.equals(contents._id)
+      )
     };
-    return contentsWithComment;
+    console.log({ result });
+    return result;
   }
 
   async updateContents(
@@ -148,10 +162,6 @@ export class ContentsService {
     });
     return result;
   }
-
-  async addLike() {}
-
-  async deleteLike() {}
 }
 
 // return
