@@ -2,12 +2,10 @@ import { Types } from "mongoose";
 import { TCommentsModel } from "../../models/comment";
 import { getPaging } from "../../utils/getPaging";
 import { IUserEntity } from "../users/interface/users";
-import { CreateCommentsDto } from "./dto/createCommentsDTO";
+import { CreateCommentsDto, UpdateCommentDTO } from "./dto/commentsDTO";
 
 export class CommentsService {
-  constructor(
-    private commentModel?: TCommentsModel
-  ) {}
+  constructor(private commentModel?: TCommentsModel) {}
 
   async createComments(
     id: Types.ObjectId,
@@ -52,7 +50,17 @@ export class CommentsService {
     return contents;
   }
 
-  async updateComments() {}
+  async updateComments(commentId: Types.ObjectId, updateCommentDTO: UpdateCommentDTO) {
+    const comment = await this?.commentModel.findByIdAndUpdate(commentId, {
+      $set: updateCommentDTO
+    });
+    return comment;
+  }
 
-  async deleteComments() {}
+  async deleteComments(commentId: Types.ObjectId) {
+    const comment = await this?.commentModel.findByIdAndUpdate(commentId, {
+      $set: { isDeleted: true }
+    });
+    return comment;
+  }
 }
