@@ -1,0 +1,37 @@
+import { NextFunction, Request, Response } from "express";
+import passport from "passport";
+import { CustomException } from "../../exceptions";
+
+export const localAuth = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate(
+    "local",
+    { session: false },
+    (err: Error, user: Express.User, info: { message: string }) => {
+      // new LocalStrategy의 콜백으로 에러처리시 기본값으로 401이므로
+      // 별도로 에러처리 해주려면 여기 콜백에서 에러처리하면
+      // done 함수가 호출할 때 여기 작성한 부분이 리턴됨
+      /* ----------------------------------------------------------- */
+      if (err) return console.error(err);
+      console.log({ error: info?.message });
+      console.log(user, info?.message);
+
+      if(info?.message === "Not exist user") {
+        return next(new CustomException(400, "유저가 존재하지 않습니다."))
+      } else if(info?.message === "Not match password") {
+        return next(new CustomException(400, "비밀번호가 일치하지 않습니다."))
+      }
+      req.user = user;
+      next();
+    }
+  )(req, res, next);
+};
+/* 
+   세션(session)을 이용한 로그인 처리
+   - 세션을 이용한 로그인 처리를 하려면 아래와 같이 
+     req.login() 사용
+
+     req.login(user, (err) => {
+       if (err) return console.error(err);
+       <--- 로그인 처리 ---->
+     });
+*/

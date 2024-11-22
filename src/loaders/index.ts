@@ -5,6 +5,6 @@ import errorHandler from "./errorHandler";
  
 export default (app: express.Application) => {
   mongodbLoader();
-  errorHandler(app);
   expressLoader(app);
+  errorHandler(app);
 };

@@ -8,7 +8,8 @@ const mongodbConnect = () => {
   try {
     mongoose.connect(env.MONGO_PATH);
   } catch (err) {
-    console.error(err);
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
   }
 };
 
